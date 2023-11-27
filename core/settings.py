@@ -32,7 +32,7 @@ DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
 MY_HOST = os.getenv('MY_HOST')  # From .env file
 
-ALLOWED_HOSTS = ['0.0.0.0', '192.168.88.12']
+ALLOWED_HOSTS = [MY_HOST, '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -93,7 +93,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
@@ -120,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en'
 
-TIME_ZONE = 'Asia/Bishkek'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
@@ -213,3 +218,12 @@ CORS_ALLOWED_ORIGINS = [
 
 # Allow all headers and methods for simplicity in development
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Email
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
