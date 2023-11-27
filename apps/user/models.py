@@ -1,15 +1,18 @@
+import os
+
 from django.contrib.auth.models import User
-from django.contrib.staticfiles import finders
+from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
 def default_avatar():
-    file_path = finders.find('profile/img/default.jpg')
+    default_image_user = 'static/profile/img/default.jpeg'
 
-    with open(file_path, 'rb') as file:
-        return file
+    with open(default_image_user, 'rb') as img_file:
+        content_file = ContentFile(img_file.read(), name=os.path.basename(default_image_user))
+        return content_file
 
 
 class Profile(models.Model):
