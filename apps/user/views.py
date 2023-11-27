@@ -1,10 +1,13 @@
 from django.contrib.auth.models import User
 from django.http import Http404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import permissions
 
 from . import serializers
 from . import models
@@ -45,6 +48,20 @@ class UserSetView(viewsets.ModelViewSet):
 
 
 class UserCreate(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    @swagger_auto_schema(
+        operation_description='Creating a user without using a token',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "username": openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.FORMAT_PASSWORD),
+                'password2': openapi.Schema(type=openapi.FORMAT_PASSWORD),
+                "email": openapi.Schema(type=openapi.FORMAT_EMAIL),
+            }
+        )
+    )
     def post(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -55,5 +72,8 @@ class UserCreate(APIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
+
+        # Add the full URL for the avatar
+        user_data['user']['profile']['avatar'] = request.build_absolute_uri(user_data['user']['profile']['avatar'])
 
         return Response(user_data, status=201)
