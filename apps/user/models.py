@@ -11,7 +11,7 @@ from apps.massage_email.my_email import send_message
 
 
 def default_avatar():
-    default_image_user = os.path.join(settings.STATIC_ROOT, 'profile', 'img', 'default.jpeg')
+    default_image_user = os.path.join(settings.STATIC_ROOT, 'project', 'img', 'default.jpeg')
     with open(default_image_user, 'rb') as img_file:
         content_file = ContentFile(img_file.read(), name=os.path.basename(default_image_user))
         return content_file
