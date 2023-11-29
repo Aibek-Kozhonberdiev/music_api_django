@@ -11,6 +11,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class MusicSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(read_only=True)
     music = serializers.FileField(required=True)
     views = serializers.IntegerField(read_only=True)
 
