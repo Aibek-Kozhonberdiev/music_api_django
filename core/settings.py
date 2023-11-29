@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     # App
     'apps.user.apps.UserConfig',
+    'apps.music.apps.MusicConfig',
 ]
 
 ASGI_APPLICATION = 'core.asgi.application'
@@ -127,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en'
 
-TIME_ZONE = 'Europe/Berlin'
+TIME_ZONE = 'Asia/Bishkek'
 
 USE_I18N = True
 
