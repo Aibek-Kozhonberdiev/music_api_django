@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from apps.massage_email.my_email import send_message
+from apps.massage_gmail.my_gmail import send_message
 
 
 def default_avatar():
@@ -26,5 +26,5 @@ class Profile(models.Model):
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-        message = f"Hello, {instance.unsername}"
-        send_message(message, 'email/hello_massage.html', instance)
+        message = f"Hello, {instance.username}"
+        send_message(message, 'gmail/hello_massage.html', instance)
