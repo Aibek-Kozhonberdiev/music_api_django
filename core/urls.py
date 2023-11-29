@@ -33,6 +33,7 @@ urlpatterns = [
 
     # Api
     path('', include('apps.user.urls')),
+    path('music/', include('apps.music.urls')),
 
     # Token
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),
@@ -43,7 +44,7 @@ urlpatterns = [
     path('drf-auth/', include('rest_framework.urls')),
 
     # Docs
-    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
