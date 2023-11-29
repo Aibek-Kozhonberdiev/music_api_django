@@ -26,4 +26,5 @@ class Profile(models.Model):
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-        send_message('email/hello_massage.html', instance)
+        message = f"Hello, {instance.unsername}"
+        send_message(message, 'email/hello_massage.html', instance)
