@@ -23,6 +23,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .swagger import schema_view
 
+
+handler404 = "core.views.custom_404"
+handler500 = "core.views.custom_500"
+
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
@@ -35,8 +39,11 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
+    # Authorization
+    path('drf-auth/', include('rest_framework.urls')),
+
     # Docs
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
