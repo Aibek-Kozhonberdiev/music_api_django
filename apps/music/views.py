@@ -3,6 +3,7 @@ from rest_framework.generics import get_object_or_404
 
 from . import serializers
 from . import models
+from ..base.services import delete_of_file
 
 
 class MusicSetView(viewsets.ModelViewSet):
@@ -16,6 +17,11 @@ class MusicSetView(viewsets.ModelViewSet):
 
         response = super().retrieve(request, *args, **kwargs)
         return response
+
+    def perform_destroy(self, instance):
+        delete_of_file(instance.image.path)
+        delete_of_file(instance.cover.path)
+        instance.delete()
 
 
 class CategorySetView(viewsets.ReadOnlyModelViewSet):

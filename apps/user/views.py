@@ -11,6 +11,7 @@ from rest_framework import permissions
 
 from . import serializers
 from . import models
+from ..base.services import delete_of_file
 
 
 class ProfileSetView(viewsets.ModelViewSet):
@@ -52,6 +53,10 @@ class UserSetView(viewsets.ModelViewSet):
 
         response = super().retrieve(request, *args, **kwargs)
         return response
+
+    def perform_destroy(self, instance):
+        delete_of_file(instance.profile.avatar.path)
+        instance.delete()
 
 
 class UserCreate(APIView):
