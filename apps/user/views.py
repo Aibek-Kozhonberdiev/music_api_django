@@ -38,7 +38,7 @@ class UserSetView(viewsets.ModelViewSet):
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
         user_data = {
-            'user': serializer.UserSerializer(user).data,
+            'user': serializers.UserSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
@@ -80,7 +80,7 @@ class UserCreate(APIView):
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
         user_data = {
-            'user': serializer.UserSerializer(user).data,
+            'user': serializers.UserSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
