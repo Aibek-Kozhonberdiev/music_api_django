@@ -19,6 +19,11 @@ def default_avatar():
         return content_file
 
 def get_path_update_avatar(instance, file):
-    """Building a path for a user avatar
+    """Building a path for a user avatar, format(media): img
     """
-    return f"account/avatar/{instance.id}/{file}"
+    return f"avatar/user_{instance.id}/{file}"
+
+def get_path_update_cover(instance, file):
+    """Building a path for a user cover, format(media): img, music
+    """
+    return f"cover/user_{instance.user.id}/{file}"

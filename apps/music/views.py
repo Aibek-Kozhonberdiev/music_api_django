@@ -7,7 +7,7 @@ from ..base.services import delete_of_file
 
 
 class MusicSetView(viewsets.ModelViewSet):
-    serializer_class = serializers.MusicSerializer
+    serializer_class = serializers.CoverSerializer
     queryset = models.Music.objects.order_by('-create', "-views")
 
     def retrieve(self, request, *args, **kwargs):
@@ -27,3 +27,8 @@ class MusicSetView(viewsets.ModelViewSet):
 class CategorySetView(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
+
+
+class AlbumSetView(viewsets.ModelViewSet):
+    serializer_class = serializers.AlbumSerializer
+    queryset = models.Album.objects.all()
