@@ -43,6 +43,9 @@ class UserSetView(viewsets.ModelViewSet):
             'access': str(refresh.access_token),
         }
 
+        # Add the full URL for the avatar
+        user_data['user']['profile']['avatar'] = request.build_absolute_uri(user_data['user']['profile']['avatar'])
+
         return Response(user_data, status=201)
 
     def retrieve(self, request, *args, **kwargs):

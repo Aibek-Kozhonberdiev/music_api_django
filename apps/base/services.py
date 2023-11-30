@@ -15,5 +15,10 @@ def default_avatar():
     """
     default_image_user = os.path.join(settings.STATIC_ROOT, 'project', 'img', 'default.jpeg')
     with open(default_image_user, 'rb') as img_file:
-        content_file = ContentFile(img_file.read(), name=os.path.basename(default_image_user))
+        content_file = ContentFile(img_file.read(), name='default.jpeg')
         return content_file
+
+def get_path_update_avatar(instance, file):
+    """Building a path for a user avatar
+    """
+    return f"account/avatar/{instance.id}/{file}"

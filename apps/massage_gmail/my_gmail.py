@@ -3,14 +3,15 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 
-def send_message(message, html_route, user):
-    html_message = render_to_string(html_route, {"user": user})
+def welcome_messages(instance):
+    message = f"Hello, {instance.username}"
+    html_message = render_to_string("gmail/hello_massage.html", {"user": instance})
 
     send_mail(
         message,
         html_message,
         settings.EMAIL_HOST_USER,
-        [user.email],
+        [instance.email],
         fail_silently=False,
         html_message=html_message
     )
