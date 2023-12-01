@@ -10,6 +10,7 @@ def delete_of_file(path_file):
     if os.path.exists(path_file):
         os.remove(path_file)
 
+
 def default_avatar():
     """To create a default avatar
     """
@@ -18,12 +19,14 @@ def default_avatar():
         content_file = ContentFile(img_file.read(), name='default.jpeg')
         return content_file
 
+
 def get_path_update_avatar(instance, file):
     """Building a path for a user avatar, format(media): img
     """
     return f"avatar/user_{instance.user.id}/{file}"
 
-def get_path_update_cover(instance, file):
+
+def get_path_update_music(instance, file):
     """Building a path for a user cover, format(media): img, music
     """
-    return f"cover/user_{instance.user.id}/{file}"
+    return f"music/user_{instance.user.id}/{file}"

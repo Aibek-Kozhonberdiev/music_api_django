@@ -10,18 +10,27 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CoverSerializer(serializers.ModelSerializer):
+class MusicSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False)
-    cover = serializers.FileField(required=False)
+    music = serializers.FileField(required=False)
     views = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Music
         fields = "__all__"
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Remove music field from output on GET request
+        if self.context['request'].method == 'GET':
+            data.pop('music', None)
+
+        return data
+
 
 class AlbumSerializer(serializers.ModelSerializer):
-    cover_set = CoverSerializer(many=True, read_only=True)
+    music_set = MusicSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Album

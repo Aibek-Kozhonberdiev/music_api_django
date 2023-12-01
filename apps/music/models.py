@@ -2,14 +2,14 @@ from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
-from apps.base.services import get_path_update_cover
+from apps.base.services import get_path_update_music
 
 
 class Music(models.Model):
-    image = models.ImageField(upload_to=get_path_update_cover)
+    image = models.ImageField(upload_to=get_path_update_music)
     title = models.CharField(max_length=150)
-    cover = models.FileField(
-        upload_to=get_path_update_cover,
+    music = models.FileField(
+        upload_to=get_path_update_music,
         validators=[
             FileExtensionValidator(
                 allowed_extensions=[
@@ -22,7 +22,7 @@ class Music(models.Model):
     create = models.DateTimeField(auto_now_add=True)
     views = models.IntegerField(default=0)
     category = models.ManyToManyField("Category", blank=True, related_name='categories')
-    album = models.ForeignKey("Album", blank=True, null=True, on_delete=models.CASCADE)
+    album = models.ForeignKey("Album", blank=True, null=True, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
