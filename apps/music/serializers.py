@@ -19,6 +19,7 @@ class CoverSerializer(serializers.ModelSerializer):
         model = models.Music
         fields = "__all__"
 
+
 class AlbumSerializer(serializers.ModelSerializer):
     cover_set = CoverSerializer(many=True, read_only=True)
 
