@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from . import models
+from ..music.serializers import MusicSerializer
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -12,6 +13,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Profile
         fields = '__all__'
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Favorite
+        fields = ('user', 'content_type', 'object_id')
 
 
 class UserSerializer(serializers.ModelSerializer):

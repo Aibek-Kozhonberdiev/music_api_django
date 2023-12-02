@@ -94,3 +94,11 @@ class UserCreate(APIView):
         user_data['user']['profile']['avatar'] = request.build_absolute_uri(user_data['user']['profile']['avatar'])
 
         return Response(user_data, status=201)
+
+
+class FavoriteSetView(viewsets.ModelViewSet):
+    queryset = models.Favorite.objects.all()
+    serializer_class = serializers.FavoriteSerializer
+
+    def get_queryset(self):
+        return models.Favorite.filter(user=self.request.user)
