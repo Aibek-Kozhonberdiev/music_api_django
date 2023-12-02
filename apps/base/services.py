@@ -30,3 +30,9 @@ def get_path_update_music(instance, file):
     """Building a path for a user cover, format(media): img, music
     """
     return f"music/user_{instance.user.id}/{file}"
+
+
+def get_path_update_category(instance, file):
+    """Building a path for a category(media): img
+    """
+    return f"category/{file}"

@@ -7,7 +7,7 @@ from . import models
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField(required=True)
+    avatar = serializers.ImageField(required=False)
 
     class Meta:
         model = models.Profile

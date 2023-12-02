@@ -4,6 +4,8 @@ from django.template.loader import render_to_string
 
 
 def welcome_messages(instance):
+    """ For a welcome email upon registration
+    """
     message = f"Hello, {instance.username}"
     html_message = render_to_string("gmail/hello_massage.html", {"user": instance})
 

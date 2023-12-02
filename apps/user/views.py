@@ -24,8 +24,11 @@ class ProfileSetView(viewsets.ModelViewSet):
         except Http404:
             return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
 
-        response = super().retrieve(request, *args, **kwargs)
-        return response
+        return super().retrieve(request, *args, **kwargs)
+
+    def perform_destroy(self, instance):
+        delete_of_file(instance.avatar.path)
+        instance.delete()
 
 
 class UserSetView(viewsets.ModelViewSet):
@@ -54,8 +57,7 @@ class UserSetView(viewsets.ModelViewSet):
         except Http404:
             return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
 
-        response = super().retrieve(request, *args, **kwargs)
-        return response
+        return super().retrieve(request, *args, **kwargs)
 
     def perform_destroy(self, instance):
         delete_of_file(instance.profile.avatar.path)
