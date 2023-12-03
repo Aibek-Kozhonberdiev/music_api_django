@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
-from apps.base.services import get_path_update_music, get_path_update_category
+from apps.base.services import get_path_update_music, get_path_update_category, get_path_update_album
 
 
 class Music(models.Model):
@@ -39,6 +39,7 @@ class Category(models.Model):
 
 class Album(models.Model):
     title = models.CharField(max_length=150, db_index=True)
+    image = models.ImageField(upload_to=get_path_update_album)
     create = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
