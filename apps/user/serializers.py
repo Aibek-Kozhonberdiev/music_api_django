@@ -4,7 +4,9 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from . import models
-from ..music.serializers import MusicSerializer
+from ..base.services import delete_of_file
+from apps.music.serializers import MusicSerializer
+from ..music.models import Music
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -14,11 +16,28 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = models.Profile
         fields = '__all__'
 
+    def update(self, instance, validated_data):
+        delete_of_file(instance.avatar.path)
+        return super().update(instance, validated_data)
+
 
 class FavoriteSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = models.Favorite
-        fields = ('user', 'content_type', 'object_id')
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # If content type is equal to music
+        if data['content_type'] == 10:
+            # Assuming data["object_id"] is the primary key of a Music instance
+            music_instance = Music.objects.get(pk=data["object_id"])
+            data['music'] = MusicSerializer(instance=music_instance, many=False).data
+            data['music']['image'] = self.context['request'].build_absolute_uri(data['music']['image'])
+
+        return data
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,7 +58,6 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"password": "Password fields didn't match."})
 
         return attrs
-
 
     def create(self, validated_data):
         user = User.objects.create(

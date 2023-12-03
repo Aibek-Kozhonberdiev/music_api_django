@@ -101,4 +101,4 @@ class FavoriteSetView(viewsets.ModelViewSet):
     serializer_class = serializers.FavoriteSerializer
 
     def get_queryset(self):
-        return models.Favorite.filter(user=self.request.user)
+        return models.Favorite.objects.filter(user=self.request.user)

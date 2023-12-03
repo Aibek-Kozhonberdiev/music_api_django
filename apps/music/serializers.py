@@ -12,21 +12,12 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class MusicSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False)
-    music = serializers.FileField(required=False)
+    music = serializers.FileField(required=False, write_only=True)
     views = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Music
         fields = "__all__"
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-
-        # Remove music field from output on GET request
-        if self.context['request'].method == 'GET':
-            data.pop('music', None)
-
-        return data
 
 
 class AlbumSerializer(serializers.ModelSerializer):
