@@ -2,5 +2,13 @@ from django.contrib import admin
 
 from . import models
 
-admin.site.register(models.Profile)
-admin.site.register(models.Favorite)
+
+@admin.register(models.Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    search_fields = ('id', 'user__username', )
+    readonly_fields = ('user', )
+
+
+@admin.register(models.Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    search_fields = ('id', 'content_type__model__icontains', )
