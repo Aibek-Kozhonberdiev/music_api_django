@@ -13,6 +13,7 @@ class Profile(models.Model):
     avatar = models.ImageField(default=default_avatar, upload_to=get_path_update_avatar)
     description = models.TextField(max_length=2000, null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    key = models.CharField(max_length=225, null=True)
 
     def __str__(self):
         return self.user.username

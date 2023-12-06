@@ -7,6 +7,7 @@ from . import models
 class ProfileAdmin(admin.ModelAdmin):
     search_fields = ('id', 'user__username', )
     readonly_fields = ('user', )
+    exclude = ('key', )
 
 
 @admin.register(models.Favorite)

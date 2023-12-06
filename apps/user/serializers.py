@@ -14,7 +14,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Profile
-        fields = '__all__'
+        fields = ('id', 'avatar', 'description', 'user')
 
     def update(self, instance, validated_data):
         delete_of_file(instance.avatar.path)

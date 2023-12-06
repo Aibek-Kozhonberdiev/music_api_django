@@ -11,4 +11,5 @@ router.register(r'favorites', views.FavoriteSetView)
 urlpatterns = [
     path('', include(router.urls)),
     path('create-user/', views.UserCreate.as_view()),
+    path('key-generate/', views.KeyPostView.as_view()),
 ]

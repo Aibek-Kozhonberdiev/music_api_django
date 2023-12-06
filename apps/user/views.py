@@ -11,7 +11,9 @@ from rest_framework import permissions
 
 from . import serializers
 from . import models
+from ..base.protections import key_generate
 from ..base.services import delete_of_file
+from ..base.protections import key_chek
 
 
 class ProfileSetView(viewsets.ModelViewSet):
@@ -26,9 +28,8 @@ class ProfileSetView(viewsets.ModelViewSet):
 
         return super().retrieve(request, *args, **kwargs)
 
-    def perform_destroy(self, instance):
-        delete_of_file(instance.avatar.path)
-        instance.delete()
+    def destroy(self, request, *args, **kwargs):
+        raise Http404
 
 
 class UserSetView(viewsets.ModelViewSet):
@@ -50,6 +51,27 @@ class UserSetView(viewsets.ModelViewSet):
         user_data['user']['profile']['avatar'] = request.build_absolute_uri(user_data['user']['profile']['avatar'])
 
         return Response(user_data, status=201)
+
+    @swagger_auto_schema(
+        operation_description='To change your profile',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "username": openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.FORMAT_PASSWORD),
+                'password2': openapi.Schema(type=openapi.FORMAT_PASSWORD),
+                "email": openapi.Schema(type=openapi.FORMAT_EMAIL),
+                "key": openapi.Schema(type=openapi.FORMAT_PASSWORD, description='The key is received by the user when sending a request to a special endpoint by mail')
+            }
+        )
+    )
+    def update(self, request, *args, **kwargs):
+        key = request.data.get('key')
+        user = get_object_or_404(User, pk=self.kwargs['pk'])
+        if key_chek(user, key) is False:
+            return Response({"key": "the key does not match or has expired"}, status=400)
+
+        return super().update(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -102,3 +124,25 @@ class FavoriteSetView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return models.Favorite.objects.filter(user=self.request.user)
+
+
+class KeyPostView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    @swagger_auto_schema(
+        operation_description='Required to generate a confirmation key when the user password is lost',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "email": openapi.Schema(type=openapi.FORMAT_EMAIL),
+            }
+        )
+    )
+    def post(self, request):
+        try:
+            email = request.data.get('email')
+            user = get_object_or_404(User, email=email)
+            key_generate(user)
+            return Response({'detail': "The key was successfully generated"}, status=201)
+        except Http404:
+            return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
