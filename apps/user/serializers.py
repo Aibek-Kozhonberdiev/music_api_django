@@ -74,5 +74,5 @@ class UserSerializer(serializers.ModelSerializer):
 class GoogleAuthSerializer(serializers.Serializer):
     """ Google Data Serialization
     """
-    email = serializers.EmailField()
-    token = serializers.CharField()
+    username = serializers.CharField()
+    email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
