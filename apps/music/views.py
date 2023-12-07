@@ -21,13 +21,13 @@ class MusicSetView(viewsets.ModelViewSet):
         music.views += 1
         music.save()
 
-    # def retrieve(self, request, *args, **kwargs):
-    #     music = get_object_or_404(models.Music, id=self.kwargs['pk'])
-    #     if os.path.exists(music.music.path):
-    #         self.add_views()
-    #         return FileResponse(open(music.music.path, 'rb'), filename=music.music.name)
-    #     else:
-    #         return Http404
+    def retrieve(self, request, *args, **kwargs):
+        music = get_object_or_404(models.Music, id=self.kwargs['pk'])
+        if os.path.exists(music.music.path):
+            self.add_views()
+            return FileResponse(open(music.music.path, 'rb'), filename=music.music.name)
+        else:
+            return Http404
 
     def perform_destroy(self, instance):
         delete_of_file(instance.image.path)
@@ -38,6 +38,7 @@ class MusicSetView(viewsets.ModelViewSet):
 class CategorySetView(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.CategorySerializer
     queryset = models.Category.objects.all()
+    pagination_class = None
 
 
 class AlbumSetView(viewsets.ModelViewSet):

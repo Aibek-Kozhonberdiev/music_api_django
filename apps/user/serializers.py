@@ -69,3 +69,10 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class GoogleAuthSerializer(serializers.Serializer):
+    """ Google Data Serialization
+    """
+    email = serializers.EmailField()
+    token = serializers.CharField()

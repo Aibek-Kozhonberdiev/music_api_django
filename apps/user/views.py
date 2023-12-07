@@ -3,6 +3,8 @@ from django.http import Http404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,9 +13,9 @@ from rest_framework import permissions
 
 from . import serializers
 from . import models
-from ..base.protections import key_generate
+from .services import google
+from .services.key_generate import key_generate, key_chek
 from ..base.services import delete_of_file
-from ..base.protections import key_chek
 
 
 class ProfileSetView(viewsets.ModelViewSet):
@@ -146,3 +148,15 @@ class KeyPostView(APIView):
             return Response({'detail': "The key was successfully generated"}, status=201)
         except Http404:
             return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
+
+
+@api_view(["POST"])
+def google_auth(request):
+    """Authorization confirmation via Google
+    """
+    google_data = serializers.GoogleAuthSerializer(data=request.data)
+    if google_data.is_valid():
+        user_data = google.check_google_auth(google_data.data)
+        return Response(user_data)
+    else:
+        return AuthenticationFailed(code=403, detail='Bad data Google')
