@@ -150,6 +150,7 @@ class KeyPostView(APIView):
             return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
 
 
+@swagger_auto_schema(method='post', operation_description='Registration via Google')
 @api_view(["POST"])
 def google_auth(request):
     """Authorization confirmation via Google

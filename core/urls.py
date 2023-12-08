@@ -34,6 +34,7 @@ urlpatterns = [
     # Api
     path('', include('apps.user.urls')),
     path('music/', include('apps.music.urls')),
+    path('broadcasting/', include('apps.broadcasting.urls')),
 
     # Token
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),

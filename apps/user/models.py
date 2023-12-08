@@ -10,9 +10,11 @@ from apps.base.my_gmail import welcome_messages
 
 
 class Profile(models.Model):
+    GENDER_CHOICES = [('Female', 'Female'), ('Male', 'Male')]
     avatar = models.ImageField(default=default_avatar, upload_to=get_path_update_avatar)
     description = models.TextField(max_length=2000, null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=100, null=True, blank=True)
     key = models.CharField(max_length=225, null=True)
 
     def __str__(self):

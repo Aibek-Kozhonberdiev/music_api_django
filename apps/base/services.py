@@ -23,22 +23,28 @@ def default_avatar():
 def get_path_update_avatar(instance, file):
     """Building a path for a user avatar, format(media): img
     """
-    return f"avatar/user_{instance.user.id}/{file}"
+    return f"user_{instance.user.id}/avatar/{file}"
 
 
 def get_path_update_music(instance, file):
     """Building a path for a user cover, format(media): img, music
     """
-    return f"music/user_{instance.user.id}/{file}"
+    return f"user_{instance.user.id}/music/{file}"
 
 
 def get_path_update_album(instance, file):
     """Building a path for a user album, format(media): img
     """
-    return f"album/user_{instance.author.id}/{file}"
+    return f"user_{instance.author.id}/album/{file}"
 
 
 def get_path_update_category(instance, file):
     """Building a path for a category(media): img
     """
     return f"category/{file}"
+
+
+def get_path_podcast_file(instance, file):
+    """Building a path for a podcast(media): img, audio
+    """
+    return f"user_{instance.user.id}/podcast/{file}"

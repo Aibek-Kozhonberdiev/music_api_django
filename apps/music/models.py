@@ -14,7 +14,8 @@ class Music(models.Model):
             FileExtensionValidator(
                 allowed_extensions=[
                     'mp3',
-                    'wav'
+                    'wav',
+                    'ogg'
                 ]
             )
         ]

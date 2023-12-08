@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # App
     'apps.user.apps.UserConfig',
     'apps.music.apps.MusicConfig',
+    'apps.broadcasting.apps.BroadcastingConfig',
 ]
 
 ASGI_APPLICATION = 'core.asgi.application'
