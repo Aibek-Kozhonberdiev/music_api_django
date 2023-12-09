@@ -3,7 +3,7 @@ import os
 import mimetypes
 
 from django.http import Http404, FileResponse, HttpResponse
-from rest_framework import viewsets, parsers
+from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 
 from . import serializers
@@ -13,7 +13,6 @@ from ..base.services import delete_of_file
 
 class MusicSetView(viewsets.ModelViewSet):
     serializer_class = serializers.MusicSerializer
-    parser_classes = (parsers.MultiPartParser, )
     queryset = models.Music.objects.order_by('-create', "-views")
 
     def perform_destroy(self, instance):

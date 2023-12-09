@@ -11,10 +11,11 @@ from ..music.models import Music
 
 class ProfileSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField(required=False)
+    update_to = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = models.Profile
-        fields = ('id', 'avatar', 'description', 'user')
+        fields = ('id', 'avatar', 'description', 'gender', 'update_to', 'user')
 
     def update(self, instance, validated_data):
         delete_of_file(instance.avatar.path)
@@ -40,9 +41,15 @@ class FavoriteSerializer(serializers.ModelSerializer):
         return data
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        allow_null=False,
+        required=False,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
     email = serializers.EmailField(
-        required=True,
+        allow_null=False,
+        required=False,
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -71,8 +78,20 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserCRUDSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    profile = ProfileSerializer(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'profile')
+
+
 class GoogleAuthSerializer(serializers.Serializer):
     """ Google Data Serialization
     """
-    username = serializers.CharField()
+    username = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())])
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])

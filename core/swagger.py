@@ -5,11 +5,11 @@ from drf_yasg import openapi
 schema_view = get_schema_view(
    openapi.Info(
       title="Snippets API",
-      default_version='v0.9',
-      description="api documentation",
+      default_version='v1',
+      description="Documentation for the music API",
       terms_of_service="#",
-      contact=openapi.Contact(email=""),
-      license=openapi.License(name=""),
+      contact=openapi.Contact(email="#"),
+      license=openapi.License(name="#"),
    ),
    public=True,
    permission_classes=(permissions.AllowAny, )

@@ -32,9 +32,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Api
-    path('', include('apps.user.urls')),
-    path('music/', include('apps.music.urls')),
-    path('broadcasting/', include('apps.broadcasting.urls')),
+    path('auth/', include('apps.user.urls')),
+    path('api/v1/', include('apps.music.urls')),
+    path('api/v1/broadcasting/', include('apps.broadcasting.urls')),
 
     # Token
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pari'),

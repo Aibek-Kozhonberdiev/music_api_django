@@ -6,7 +6,7 @@ from . import models
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     search_fields = ('id', 'user__username', )
-    readonly_fields = ('user', )
+    readonly_fields = ('user', 'update_to',)
     exclude = ('key', )
 
 

@@ -5,7 +5,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'users', views.UserSetView)
-router.register(r'profiles', views.ProfileSetView)
+router.register(r'profiles', views.ProfileCreateUpdateList)
 router.register(r'favorites', views.FavoriteSetView)
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     path('create-user/', views.UserCreate.as_view()),
     path('key-generate/', views.KeyPostView.as_view()),
     path('google-auth/', views.google_auth),
+    path('create-new-password/<int:pk>/', views.create_user_new_password),
 ]

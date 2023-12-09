@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.http import Http404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import get_object_or_404
@@ -18,7 +18,11 @@ from .services.key_generate import key_generate, key_chek
 from ..base.services import delete_of_file
 
 
-class ProfileSetView(viewsets.ModelViewSet):
+class ProfileCreateUpdateList(mixins.CreateModelMixin,
+                              mixins.RetrieveModelMixin,
+                              mixins.UpdateModelMixin,
+                              mixins.ListModelMixin,
+                              viewsets.GenericViewSet):
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileSerializer
 
@@ -30,16 +34,13 @@ class ProfileSetView(viewsets.ModelViewSet):
 
         return super().retrieve(request, *args, **kwargs)
 
-    def destroy(self, request, *args, **kwargs):
-        raise Http404
-
 
 class UserSetView(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
-    serializer_class = serializers.UserSerializer
+    serializer_class = serializers.UserCRUDSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = serializers.UserCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
@@ -53,27 +54,6 @@ class UserSetView(viewsets.ModelViewSet):
         user_data['user']['profile']['avatar'] = request.build_absolute_uri(user_data['user']['profile']['avatar'])
 
         return Response(user_data, status=201)
-
-    @swagger_auto_schema(
-        operation_description='To change your profile',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "username": openapi.Schema(type=openapi.TYPE_STRING),
-                'password': openapi.Schema(type=openapi.FORMAT_PASSWORD),
-                'password2': openapi.Schema(type=openapi.FORMAT_PASSWORD),
-                "email": openapi.Schema(type=openapi.FORMAT_EMAIL),
-                "key": openapi.Schema(type=openapi.FORMAT_PASSWORD, description='The key is received by the user when sending a request to a special endpoint by mail')
-            }
-        )
-    )
-    def update(self, request, *args, **kwargs):
-        key = request.data.get('key')
-        user = get_object_or_404(User, pk=self.kwargs['pk'])
-        if key_chek(user, key) is False:
-            return Response({"key": "the key does not match or has expired"}, status=400)
-
-        return super().update(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -104,7 +84,7 @@ class UserCreate(APIView):
         )
     )
     def post(self, request, *args, **kwargs):
-        serializer = serializers.UserSerializer(data=request.data)
+        serializer = serializers.UserCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         refresh = RefreshToken.for_user(user)
@@ -145,7 +125,12 @@ class KeyPostView(APIView):
             email = request.data.get('email')
             user = get_object_or_404(User, email=email)
             key_generate(user)
-            return Response({'detail': "The key was successfully generated"}, status=201)
+            return Response(
+                {
+                    'detail': "Key generated successfully, valid for 3 minutes",
+                    "user_id": user.id
+                }, status=201
+            )
         except Http404:
             return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
 
@@ -161,3 +146,36 @@ def google_auth(request):
         return Response(user_data)
     else:
         return AuthenticationFailed(code=403, detail='Bad data Google')
+
+
+@swagger_auto_schema(
+    method='patch',
+    operation_description='To change your password',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+            'password': openapi.Schema(type=openapi.FORMAT_PASSWORD),
+            'password2': openapi.Schema(type=openapi.FORMAT_PASSWORD),
+            "key": openapi.Schema(type=openapi.FORMAT_PASSWORD, description='The key is received by the user when sending a request to a special endpoint by mail')
+        }
+    )
+)
+@api_view(['PATCH'])
+def create_user_new_password(request, pk=None):
+    """This function is to create a new password and verify the verification key
+    """
+    serializer = serializers.UserCreateSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    key = request.data.get('key')
+    try:
+        get_object_or_404(User, pk=pk)
+    except Http404:
+        return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
+
+    if key_chek(User, key) is False:
+        return Response({"key": "the key does not match or has expired"}, status=400)
+
+    serializer.save()
+    return Response({'detail': "Password changed successfully"}, status=201)

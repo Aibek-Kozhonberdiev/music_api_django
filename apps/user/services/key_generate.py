@@ -1,5 +1,6 @@
 import random
 
+from datetime import datetime, timedelta, timezone
 from django.contrib.auth.hashers import make_password, check_password
 
 from apps.base.my_gmail import key_message
@@ -26,4 +27,10 @@ def key_chek(user, key):
     """
     profile = models.Profile.objects.get(user=user)
     raw_password = profile.key
+
+    # Checking the key by time
+    threshold_time = profile.update_to.replace(tzinfo=timezone.utc) + timedelta(minutes=3)
+    if datetime.now(timezone.utc) > threshold_time:
+        return False
+
     return check_password(key, raw_password)
