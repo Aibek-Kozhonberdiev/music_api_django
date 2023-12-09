@@ -16,6 +16,27 @@ class MusicSetView(viewsets.ModelViewSet):
     parser_classes = (parsers.MultiPartParser, )
     queryset = models.Music.objects.order_by('-create', "-views")
 
+    def perform_destroy(self, instance):
+        delete_of_file(instance.image.path)
+        delete_of_file(instance.music.path)
+        instance.delete()
+
+
+class CategoryReadOnly(viewsets.ReadOnlyModelViewSet):
+    serializer_class = serializers.CategorySerializer
+    queryset = models.Category.objects.all()
+    pagination_class = None
+
+
+class AlbumSetView(viewsets.ModelViewSet):
+    serializer_class = serializers.AlbumSerializer
+    queryset = models.Album.objects.all()
+
+
+class MusicReadOnly(viewsets.ReadOnlyModelViewSet):
+    serializer_class = serializers.MusicSerializer
+    queryset = models.Music.objects.order_by('-create', "-views")
+
     def add_views(self, music):
         """ When listening, adds views by 1
         """
@@ -42,13 +63,10 @@ class MusicSetView(viewsets.ModelViewSet):
 
                 response = HttpResponse(data, content_type=content_type, status=206)
                 response['Content-Range'] = f'bytes {start}-{end}/{file_size}'
-            else:
-                # Otherwise we send the entire file
-                data = open(music.music.path, 'rb').read()
-                response = FileResponse(open(music.music.path, 'rb'), content_type=content_type)
+                response['Accept-Ranges'] = 'bytes'
+                return response
 
-            response['Accept-Ranges'] = 'bytes'
-            return response
+            return FileResponse(open(music.music.path, 'rb'), content_type=content_type)
         else:
             raise Http404
 
@@ -59,19 +77,3 @@ class MusicSetView(viewsets.ModelViewSet):
             end = int(match.group(2)) if match.group(2) else file_size - 1
             return start, end
         return 0, file_size - 1
-
-    def perform_destroy(self, instance):
-        delete_of_file(instance.image.path)
-        delete_of_file(instance.music.path)
-        instance.delete()
-
-
-class CategorySetView(viewsets.ReadOnlyModelViewSet):
-    serializer_class = serializers.CategorySerializer
-    queryset = models.Category.objects.all()
-    pagination_class = None
-
-
-class AlbumSetView(viewsets.ModelViewSet):
-    serializer_class = serializers.AlbumSerializer
-    queryset = models.Album.objects.all()

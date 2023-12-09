@@ -6,6 +6,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'podcasts', views.PodcastViewSet)
+router.register(r'podcasts-listen', views.PodcastReadOnly)
 
 urlpatterns = [
     path('', include(router.urls)),
