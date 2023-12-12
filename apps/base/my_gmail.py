@@ -20,7 +20,7 @@ def welcome_messages(instance):
 
 
 def key_message(instance, key):
-    """
+    """ Sends a confirmation key by email to recover your password
     """
     message = "Ключ подтверждения"
     html_message = render_to_string("gmail/key_message.html", {'user': instance, "key": key})

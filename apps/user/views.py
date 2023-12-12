@@ -154,7 +154,6 @@ def google_auth(request):
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'id': openapi.Schema(type=openapi.TYPE_INTEGER),
             'password': openapi.Schema(type=openapi.FORMAT_PASSWORD),
             'password2': openapi.Schema(type=openapi.FORMAT_PASSWORD),
             "key": openapi.Schema(type=openapi.FORMAT_PASSWORD, description='The key is received by the user when sending a request to a special endpoint by mail')
@@ -174,8 +173,9 @@ def create_user_new_password(request, pk=None):
     except Http404:
         return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
 
+    # key authentication check
     if key_chek(User, key) is False:
         return Response({"key": "the key does not match or has expired"}, status=400)
 
     serializer.save()
-    return Response({'detail': "Password changed successfully"}, status=201)
+    return Response({'detail': "Password changed successfully"}, status=204)

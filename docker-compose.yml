@@ -1,0 +1,21 @@
+version: '2.23.0'
+
+services:
+  dm_db:
+    image: postgres:15.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+  dm_api:
+    build: .
+    command: python /code/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - dm_db
+
+volumes:
+  postgres_data:
