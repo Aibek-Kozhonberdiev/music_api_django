@@ -74,6 +74,7 @@ DOCS_LICENSE='#'
 DOCS_TERMS_OF_SERVISE='#'
 
 # PostgreSQL
+DB_NAME=postgres
 USERNAME=postgres
 PASSWORD=postgres
 SERVER=dm_db
@@ -84,6 +85,7 @@ PORT=5432
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DB_NAME', os.getenv('USERNAME')),
         'USER': os.getenv('USERNAME'),
         'PASSWORD': os.getenv('PASSWORD'),
         'HOST': os.getenv('SERVER'),

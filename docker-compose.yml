@@ -3,6 +3,8 @@ version: '2.23.0'
 services:
   dm_db:
     image: postgres:15.4
+    environment:
+      POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
