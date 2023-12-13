@@ -42,7 +42,7 @@ ___
 
 ## Installation :computer:
 ```bash
-git clone https://github.com/Aibek-Kozhonberdiev/music_projects.git
+git clone https://github.com/Aibek-Kozhonberdiev/music_api_django.git
 ```
 ```bash
 python -m venv venv && source venv/bin/activate
