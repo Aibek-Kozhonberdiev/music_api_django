@@ -80,16 +80,12 @@ PASSWORD=postgres
 SERVER=dm_db
 PORT=5432
 ```
-+ If you want to use postgresql, you need to change the `DATABASES` value in the `settings.py` file to the following:
++ If you want to use SQLite, you need to change the `DATABASES` value in the `settings.py` file to the following:
 ```python
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DB_NAME', os.getenv('USERNAME')),
-        'USER': os.getenv('USERNAME'),
-        'PASSWORD': os.getenv('PASSWORD'),
-        'HOST': os.getenv('SERVER'),
-        'PORT': os.getenv('PORT'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 ```

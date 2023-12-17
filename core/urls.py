@@ -32,7 +32,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Api
-    path('auth/', include('apps.user.urls')),
+    path('', include('apps.user.urls')),
     path('api/v1/', include('apps.music.urls')),
     path('api/v1/broadcasting/', include('apps.broadcasting.urls')),
 

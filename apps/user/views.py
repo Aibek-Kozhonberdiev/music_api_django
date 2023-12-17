@@ -7,7 +7,6 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import permissions
 
@@ -35,25 +34,13 @@ class ProfileCreateUpdateList(mixins.CreateModelMixin,
         return super().retrieve(request, *args, **kwargs)
 
 
-class UserSetView(viewsets.ModelViewSet):
+class UserLUDView(mixins.ListModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.DestroyModelMixin,
+                  viewsets.GenericViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserCRUDSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = serializers.UserCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        user_data = {
-            'user': serializers.UserSerializer(user).data,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
-
-        # Add the full URL for the avatar
-        user_data['user']['profile']['avatar'] = request.build_absolute_uri(user_data['user']['profile']['avatar'])
-
-        return Response(user_data, status=201)
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -68,71 +55,39 @@ class UserSetView(viewsets.ModelViewSet):
         instance.delete()
 
 
-class UserCreate(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    @swagger_auto_schema(
-        operation_description='Creating a user without using a token',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "username": openapi.Schema(type=openapi.TYPE_STRING),
-                'password': openapi.Schema(type=openapi.FORMAT_PASSWORD),
-                'password2': openapi.Schema(type=openapi.FORMAT_PASSWORD),
-                "email": openapi.Schema(type=openapi.FORMAT_EMAIL),
-            }
-        )
-    )
-    def post(self, request, *args, **kwargs):
-        serializer = serializers.UserCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        user_data = {
-            'user': serializers.UserSerializer(user).data,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
-
-        # Add the full URL for the avatar
-        user_data['user']['profile']['avatar'] = request.build_absolute_uri(user_data['user']['profile']['avatar'])
-
-        return Response(user_data, status=201)
-
-
 class FavoriteSetView(viewsets.ModelViewSet):
     queryset = models.Favorite.objects.all()
     serializer_class = serializers.FavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return models.Favorite.objects.filter(user=self.request.user)
 
 
-class KeyPostView(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    @swagger_auto_schema(
-        operation_description='Required to generate a confirmation key when the user password is lost',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "email": openapi.Schema(type=openapi.FORMAT_EMAIL),
-            }
-        )
+@swagger_auto_schema(
+    method='post',
+    operation_description='Required to generate a confirmation key when the user password is lost',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "email": openapi.Schema(type=openapi.FORMAT_EMAIL),
+        }
     )
-    def post(self, request):
-        try:
-            email = request.data.get('email')
-            user = get_object_or_404(User, email=email)
-            key_generate(user)
-            return Response(
-                {
-                    'detail': "Key generated successfully, valid for 3 minutes",
-                    "user_id": user.id
-                }, status=201
-            )
-        except Http404:
-            return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
+)
+@api_view(['POST'])
+def key_generate(request):
+    try:
+        email = request.data.get('email')
+        user = get_object_or_404(User, email=email)
+        key_generate(user)
+        return Response(
+            {
+                'detail': "Key generated successfully, valid for 3 minutes",
+                "user_id": user.id
+            }, status=201
+        )
+    except Http404:
+        return Response({'detail': "the request was not applied because it lacked valid credentials"}, status=401)
 
 
 @swagger_auto_schema(method='post', operation_description='Registration via Google')
@@ -179,3 +134,34 @@ def create_user_new_password(request, pk=None):
 
     serializer.save()
     return Response({'detail': "Password changed successfully"}, status=204)
+
+
+@swagger_auto_schema(
+    method='post',
+    operation_description='Registration user',
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            "username": openapi.Schema(type=openapi.TYPE_STRING),
+            'password': openapi.Schema(type=openapi.FORMAT_PASSWORD),
+            'password2': openapi.Schema(type=openapi.FORMAT_PASSWORD),
+            "email": openapi.Schema(type=openapi.FORMAT_EMAIL),
+        }
+    )
+)
+@api_view(['POST'])
+def registration_user(request):
+    serializer = serializers.UserCreateSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+    refresh = RefreshToken.for_user(user)
+    user_data = {
+        'user': serializers.UserCRUDSerializer(user).data,
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
+    # Add the full URL for the avatar
+    user_data['user']['profile']['avatar'] = request.build_absolute_uri(user_data['user']['profile']['avatar'])
+
+    return Response(user_data, status=201)

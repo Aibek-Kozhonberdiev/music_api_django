@@ -242,3 +242,7 @@ GOOGLE_SECRET_KEY = os.environ.get('GOOGLE_SECRET_KEY')
 DOCS_EMAIL = os.getenv('DOCS_EMAIL')
 DOCS_LICENSE = os.getenv('DOCS_LICENSE')
 DOCS_TERMS_OF_SERVISE = os.getenv('DOCS_TERMS_OF_SERVISE')
+
+# Default avatar image path (static file)
+
+DEFAULT_AVATAR_PATH = STATIC_ROOT + '/project/img/default.jpeg'
